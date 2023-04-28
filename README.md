@@ -35,3 +35,8 @@ SOLARMARKET_API_KEY="api-key-aqui"
 ```
 
 Substitua `api-key-aqui` pela chave de API fornecida pelo SolarMarket.
+
+Documentação
+------------
+
+A documentação completa da API do SolarMarket pode ser encontrada em: [https://solarmarket.docs.apiary.io/](https://solarmarket.docs.apiary.io/)

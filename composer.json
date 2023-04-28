@@ -1,6 +1,6 @@
 {
 	"name": "whatysonneves/solarmarket-php-client",
-	"description": "Cliente PHP para consumir a API do SolarMarket",
+	"description": "Cliente PHP para consumir a API do SolarMarket.",
 	"version": "1.0.0",
 	"license": "MIT",
 	"authors": [
