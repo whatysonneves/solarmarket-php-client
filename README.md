@@ -18,7 +18,7 @@ git clone https://github.com/whatysonneves/solarmarket-php-client.git
 3.  Navegue até o diretório do projeto:
 
 ```bash
-cd solarmarket-api-php-client
+cd solarmarket-php-client
 ```
 
 4.  Instale os pacotes do Composer:
