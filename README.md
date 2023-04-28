@@ -1,3 +1,5 @@
+[![wakatime](https://wakatime.com/badge/user/4e5fbddb-4ea8-4113-a874-b77006bb78dc/project/415517ee-17f8-4cb4-ae48-8dbb62157539.svg)](https://wakatime.com/badge/user/4e5fbddb-4ea8-4113-a874-b77006bb78dc/project/415517ee-17f8-4cb4-ae48-8dbb62157539)
+
 SolarMarketAPI PHP Client
 =========================
 
