@@ -3,8 +3,6 @@
 require_once "./bootstrap.php";
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\RequestOptions;
 
 class SolarMarketAPI {
 
@@ -41,7 +39,7 @@ class SolarMarketAPI {
 	protected function gerarAPIAccessToken()
 	{
 		$response = $this->client->post("/api/v1", [
-			RequestOptions::JSON => [
+			"json" => [
 				"query" => "mutation (\$APIToken: String!) { generateAPIAccessToken(userAPIToken: \$APIToken) }",
 				"variables" => [
 					"APIToken" => $this->apiKey,
@@ -49,12 +47,7 @@ class SolarMarketAPI {
 			],
 		]);
 
-		if($response->getStatusCode() !== 200) {
-			throw new Exception("Erro ao obter o API Access Token +https://solarmarket.docs.apiary.io/#reference/0/authentication/authenticate");
-		}
-
-		$body = $response->getBody();
-		$data = json_decode($body, true);
+		$data = json_decode($response->getBody(), true);
 
 		if(isset($data["data"]["generateAPIAccessToken"])) {
 			return $this->salvarAccessToken($data["data"]["generateAPIAccessToken"]);
@@ -105,6 +98,213 @@ class SolarMarketAPI {
 		}
 
 		return $this->gerarAPIAccessToken();
+	}
+
+	/**
+	 * Retorna uma lista de clientes da SolarMarket.
+	 *
+	 * @param string $name|null
+	 * @param int    $quantidade
+	 * @param int    $offset
+	 * 
+	 * @return array
+	 * 
+	 * @throws RequestException
+	 */
+	public function listarClientes($nome = null, $quantidade = 10, $offset = 0)
+	{
+		$response = $this->client->post("/graphql", [
+			"headers" => [
+				"Authorization" => "Bearer {$this->getAccessToken()}",
+			],
+			"json" => [
+				"query" => '
+					query ListClients($first: Int, $offset: Int, $name: String) {
+						listClients(first: $first, offset: $offset, name: $name) {
+							id
+							user {
+								id
+								name
+								email
+								phone
+								createdAt
+							}
+							representative {
+								id
+								name
+								email
+								phone
+								createdAt
+							}
+							name
+							company
+							cnpjCpf
+							email
+							phone
+							secondaryPhone
+							adress
+							number
+							complement
+							neighborhood
+							city
+							state
+							createdAt
+							deletedAt
+						}
+					}
+				',
+				"variables" => [
+					"first" => $quantidade,
+					"offset" => $offset,
+					"name" => $nome,
+				],
+			],
+		]);
+
+		$responseBody = json_decode($response->getBody()->getContents(), true);
+
+		return $responseBody["data"]["listClients"];
+	}
+
+	/**
+	 * Procura um cliente pelo ID.
+	 * 
+	 * @param string $id
+	 * @return array
+	 * @throws GuzzleException
+	 */
+	public function procurarCliente($id)
+	{
+		$response = $this->client->post("/graphql", [
+			"headers" => [
+				"Authorization" => "Bearer {$this->getAccessToken()}",
+			],
+			"json" => [
+				"query" => '
+					query FindClient($id: ID!) {
+						findClient(id: $id) {
+							id
+							user {
+								id
+								name
+								email
+								phone
+								createdAt
+							}
+							representative {
+								id
+								name
+								email
+								phone
+								createdAt
+							}
+							name
+							company
+							cnpjCpf
+							email
+							phone
+							secondaryPhone
+							adress
+							number
+							complement
+							neighborhood
+							city
+							state
+							createdAt
+							deletedAt
+						}
+					}
+				',
+				"variables" => [
+					"id" => $id,
+				],
+			],
+		]);
+
+		$responseBody = json_decode($response->getBody()->getContents(), true);
+
+		return $responseBody["data"]["findClient"];
+	}
+
+	/**
+	 * Retorna uma lista de projetos de acordo com os parâmetros informados.
+	 *
+	 * @param string|null $nome
+	 * @param int|null    $clientId
+	 * @param bool|null   $crm
+	 * @param string|null $statusProject
+	 * @param string|null $createdAtStart
+	 * @param string|null $createdAtFinish
+	 * @param array|null  $responsibleId
+	 * @param array|null  $representativeId
+	 * @param bool|null   $deleted
+	 * @param int         $quantidade
+	 * @param int         $offset
+	 * @return array      Array de objetos Projeto com os dados dos projetos encontrados.
+	 */
+	public function listarProjetos(
+		?string $nome = null,
+		?int $clientId = null,
+		?bool $crm = null,
+		?string $statusProject = null,
+		?string $createdAtStart = null,
+		?string $createdAtFinish = null,
+		?array $responsibleId = null,
+		?array $representativeId = null,
+		?bool $deleted = null,
+		int $quantidade = 10,
+		int $offset = 0
+	) {
+		$response = $this->client->post("/graphql", [
+			"headers" => [
+				"Authorization" => "Bearer {$this->getAccessToken()}",
+			],
+			"json" => [
+				"query" => '
+					query ListProjects(
+					$first: Int, $offset: Int, $name: String, $clientId: Int,
+					$crm: Boolean, $statusProject: StatusProject,
+					$createdAtStart: Date, $createdAtFinish: Date, $responsibleId: [Int],
+					$representativeId: [Int], $deleted: Boolean
+					) {
+						listProjects(
+						first: $first, offset: $offset, name: $name, clientId: $clientId,
+						crm: $crm, statusProject: $statusProject,
+						createdAtStart: $createdAtStart, createdAtFinish: $createdAtFinish, responsibleId: $responsibleId,
+						representativeId: $representativeId, deleted: $deleted
+						) {
+							id
+							name
+							client {
+								id
+							}
+							responsible {
+								id
+								name
+							}
+							qntProposals
+						}
+					}
+				',
+				"variables" => [
+					"first" => $quantidade,
+					"offset" => $offset,
+					"name" => $nome,
+					"clientId" => $clientId,
+					"crm" => $crm,
+					"statusProject" => $statusProject,
+					"createdAtStart" => $createdAtStart,
+					"createdAtFinish" => $createdAtFinish,
+					"responsibleId" => $responsibleId,
+					"representativeId" => $representativeId,
+					"deleted" => $deleted,
+				],
+			],
+		]);
+
+		$responseBody = json_decode($response->getBody()->getContents(), true);
+
+		return $responseBody["data"]["listProjects"];
 	}
 
 }
