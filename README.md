@@ -30,7 +30,7 @@ composer install
 5.  Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis de ambiente:
 
 ```ini
-SOLARMARKET_API_URL="https://api.solarmarket.com.br/"
+SOLARMARKET_API_URL="https://business.solarmarket.com.br/"
 SOLARMARKET_API_KEY="api-key-aqui"
 ```
 
