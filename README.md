@@ -27,14 +27,14 @@ cd solarmarket-php-client
 composer install
 ```
 
-5.  Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis de ambiente:
+5.  Renomeie o arquivo `.env.example` para `.env`;
+6.  Substitua `api-key-aqui` pela chave de API fornecida pelo SolarMarket dentro do arquivo `.env`.
 
-```ini
-SOLARMARKET_API_URL="https://business.solarmarket.com.br/"
-SOLARMARKET_API_KEY="api-key-aqui"
-```
+Como usar
+---------
 
-Substitua `api-key-aqui` pela chave de API fornecida pelo SolarMarket.
+Após a instalação, você pode usar a classe `SolarMarketAPI` para consumir a API do SolarMarket. Veja o arquivo `examples.php`.
+Lembre-se de ter as variáveis de ambiente definidas corretamente no arquivo `.env` antes de usar a classe `SolarMarketAPI`.
 
 Documentação
 ------------
