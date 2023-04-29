@@ -18,7 +18,7 @@ var_dump($listarClientes);
 
 // Procurando clientes por nome
 echo "<h1>Procurando clientes por nome</h1>".PHP_EOL;
-$listarClientes = $solarMarketAPI->listarClientes("Anisia");
+$listarClientes = $solarMarketAPI->listarClientes("Bueno");
 var_dump($listarClientes);
 
 // Procurando cliente por ID

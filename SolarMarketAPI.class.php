@@ -106,9 +106,9 @@ class SolarMarketAPI {
 	 * @param string $name|null
 	 * @param int    $quantidade
 	 * @param int    $offset
-	 * 
+	 *
 	 * @return array
-	 * 
+	 *
 	 * @throws RequestException
 	 */
 	public function listarClientes($nome = null, $quantidade = 10, $offset = 0)
@@ -161,14 +161,12 @@ class SolarMarketAPI {
 			],
 		]);
 
-		$responseBody = json_decode($response->getBody()->getContents(), true);
-
-		return $responseBody["data"]["listClients"];
+		return $this->responseBody($response, "listClients");
 	}
 
 	/**
 	 * Procura um cliente pelo ID.
-	 * 
+	 *
 	 * @param string $id
 	 * @return array
 	 * @throws GuzzleException
@@ -221,9 +219,7 @@ class SolarMarketAPI {
 			],
 		]);
 
-		$responseBody = json_decode($response->getBody()->getContents(), true);
-
-		return $responseBody["data"]["findClient"];
+		return $this->responseBody($response, "findClient");
 	}
 
 	/**
@@ -302,9 +298,45 @@ class SolarMarketAPI {
 			],
 		]);
 
-		$responseBody = json_decode($response->getBody()->getContents(), true);
-
-		return $responseBody["data"]["listProjects"];
+		return $this->responseBody($response, "listProjects");
 	}
 
+	/**
+	 * Retorna o valor da chave especificada do corpo da resposta da requisição em formato JSON.
+	 *
+	 * @param $response
+	 * @param $key
+	 * @return mixed
+	 */
+	public function responseBody($response, $key)
+	{
+		$responseBody = json_decode($response->getBody()->getContents(), true);
+		$this->checkReturn($responseBody);
+
+		if(!is_null($responseBody) && !is_null($responseBody["data"])) {
+			return $responseBody["data"][$key];
+		}
+
+		return $responseBody;
+	}
+
+	/**
+	 * Verifica o retorno da API e apaga o arquivo de token de acesso caso o token tenha expirado.
+	 *
+	 * @param array $response
+	 * @return void
+	 */
+	public function checkReturn($responseBody)
+	{
+		if(
+			is_array($responseBody) &&
+			array_key_exists("success", $responseBody) &&
+			!$responseBody["success"] &&
+			$responseBody["errors"][0]["code"] == "JWT-EXPIRED"
+		) {
+			if(!file_exists($this->accessTokenFile)) {
+			}
+			unlink($this->accessTokenFile);
+		}
+	}
 }
